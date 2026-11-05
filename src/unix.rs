@@ -472,7 +472,23 @@ impl MmapInner {
         #[cfg(target_os = "aix")]
         let ptr = self.ptr.offset(offset).cast();
 
+        #[cfg(target_os = "qnx")]
+        {
+            if len == 0 {
+                return Ok(());
+            }
+
+            // SAFETY: ptr and len are valid. The burden of giving a safe `advice` value is on the caller.
+            let errno = unsafe { libc::posix_madvise(ptr, len, advice) };
+            return if errno == 0 {
+                Ok(())
+            } else {
+                Err(io::Error::from_raw_os_error(errno))
+            };
+        }
+
         // SAFETY: ptr and len are valid. The burden of giving a safe `advice` value is on the caller.
+        #[cfg(not(target_os = "qnx"))]
         if unsafe { libc::madvise(ptr, len, advice) } != 0 {
             Err(io::Error::last_os_error())
         } else {
