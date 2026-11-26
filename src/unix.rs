@@ -6,6 +6,7 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 
 #[cfg(any(
     all(target_os = "linux", not(target_arch = "mips")),
+    target_os = "qnx",
     target_os = "freebsd",
     target_os = "android"
 ))]
@@ -13,6 +14,7 @@ const MAP_STACK: libc::c_int = libc::MAP_STACK;
 
 #[cfg(not(any(
     all(target_os = "linux", not(target_arch = "mips")),
+    target_os = "qnx",
     target_os = "freebsd",
     target_os = "android"
 )))]

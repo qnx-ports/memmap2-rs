@@ -7,26 +7,44 @@ pub enum Advice {
     /// **MADV_NORMAL**
     ///
     /// No special treatment.  This is the default.
-    Normal = libc::MADV_NORMAL,
-
+    Normal = {
+        #[cfg(target_os = "qnx")]
+        { libc::POSIX_MADV_NORMAL }
+        #[cfg(not(target_os = "qnx"))]
+        { libc::MADV_NORMAL }
+    },
     /// **MADV_RANDOM**
     ///
     /// Expect page references in random order.  (Hence, read
     /// ahead may be less useful than normally.)
-    Random = libc::MADV_RANDOM,
-
+    Random = {
+        #[cfg(target_os = "qnx")]
+        { libc::POSIX_MADV_RANDOM }
+        #[cfg(not(target_os = "qnx"))]
+        { libc::MADV_RANDOM }
+    },
     /// **MADV_SEQUENTIAL**
     ///
     /// Expect page references in sequential order.  (Hence, pages
     /// in the given range can be aggressively read ahead, and may
     /// be freed soon after they are accessed.)
-    Sequential = libc::MADV_SEQUENTIAL,
+    Sequential= {
+        #[cfg(target_os = "qnx")]
+        { libc::POSIX_MADV_SEQUENTIAL }
+        #[cfg(not(target_os = "qnx"))]
+        { libc::MADV_SEQUENTIAL }
+    },
 
     /// **MADV_WILLNEED**
     ///
     /// Expect access in the near future.  (Hence, it might be a
     /// good idea to read some pages ahead.)
-    WillNeed = libc::MADV_WILLNEED,
+    WillNeed = {
+        #[cfg(target_os = "qnx")]
+        { libc::POSIX_MADV_WILLNEED}
+        #[cfg(not(target_os = "qnx"))]
+        { libc::MADV_WILLNEED}
+    },
 
     /// **MADV_DONTFORK** - Linux only (since Linux 2.6.16)
     ///
@@ -285,7 +303,12 @@ pub enum UncheckedAdvice {
     /// Using the returned value with conceptually write to the
     /// mapped pages, i.e. borrowing the mapping when the pages
     /// are freed results in undefined behaviour.
-    DontNeed = libc::MADV_DONTNEED,
+    DontNeed= {
+        #[cfg(target_os = "qnx")]
+        { libc::POSIX_MADV_DONTNEED }
+        #[cfg(not(target_os = "qnx"))]
+        { libc::MADV_DONTNEED }
+    },
 
     //
     // The rest are Linux-specific
